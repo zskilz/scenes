@@ -7,3 +7,9 @@
 [submodule "r.js"]
 	path = r.js
 	url = git://github.com/jrburke/r.js.git
+[submodule "dat-gui"]
+	path = dat-gui
+	url = https://code.google.com/p/dat-gui/
+[submodule "requirejs-plugins"]
+	path = requirejs-plugins
+	url = git://github.com/millermedeiros/requirejs-plugins.git

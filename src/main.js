@@ -9,8 +9,11 @@ require.config({
   },
 
   paths: {
+    text: '../requirejs-plugins/lib/text',
+    image: '../requirejs-plugins/src/image',
+    'dat.gui' : '../dat-gui/build/dat.gui.min',
     jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min',
-    three: '../three.js/build/three.min',//.min'
+    three: '../three.js/build/three.min', //.min'
   },
 
 });
