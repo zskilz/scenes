@@ -25,7 +25,7 @@ define(function() {
 
       material = new THREE.MeshPhongMaterial({
         color: 0xffaa44,
-        wireframe: true
+        //wireframe: true
       });
 
       geometry.computeFaceNormals();

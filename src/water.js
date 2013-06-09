@@ -27,7 +27,10 @@ define(function() {
       scene.add(mesh);
 
       // setup GUI
+      
       var gui = parentGUI.addFolder('water');
+      
+      parentGUI.remember(mesh.position);
       gui.add(mesh.position, "y", - 1300, 100);
     }
   };
