@@ -13,3 +13,6 @@
 [submodule "requirejs-plugins"]
 	path = requirejs-plugins
 	url = git://github.com/millermedeiros/requirejs-plugins.git
+[submodule "tween.js"]
+	path = tween.js
+	url = git://github.com/sole/tween.js.git

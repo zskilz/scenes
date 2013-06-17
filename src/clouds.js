@@ -1,4 +1,4 @@
-define(['image!img/cloud.png', 'text!shaders/cloud.vert', 'text!shaders/cloud.frag'], function(cloud, vertexShader, fragmentShader) {
+define(['image!img/cloud.png', 'text!glsl/cloud.vert', 'text!glsl/cloud.frag'], function(cloud, vertexShader, fragmentShader) {
 
   var geometry, material, mesh;
 
