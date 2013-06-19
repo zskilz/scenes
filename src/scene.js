@@ -13,6 +13,29 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
 
   var camera, scene, renderer, composer;
 
+  //setup local storage...
+  if (typeof(localStorage) === undefined) return console.log('Sorry, localStorage only.');
+
+  // first up the gui JSON
+
+  var mainGUIJSON = (typeof(localStorage['mainGUI']) === 'undefined') ? {
+    preset: 'Default',
+    remembered: {
+      'Default': {}
+    }
+  } : JSON.parse(localStorage['mainGUI']);
+
+  var Tweenz = [], loadedTweenz = (typeof(localStorage['Tweenz']) === 'undefined') ? [] : JSON.parse(localStorage['Tweenz']);
+
+  var mainGUI = mg = new dat.GUI({
+    name: 'mainGUI',
+    load: mainGUIJSON
+  });
+
+  var transitionGUI = new dat.GUI({
+    name: 'transitionGUI',
+  });
+
   //build TWEEN selects
   var easings = {};
   Object.keys(TWEEN.Easing).forEach(function(family) {
@@ -22,14 +45,7 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
     });
   });
 
-  var mainGUI = mg = new dat.GUI({
-    name: 'mainGUI',
-  });
-  mainGUI.useLocalStorage = true;
 
-  var transisionGUI = new dat.GUI({
-    name: 'mainGUI',
-  });
 
   var mouseX = 0,
     mouseY = 0;
@@ -202,63 +218,6 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
     clouds.init(scene, mainGUI);
   }
 
-  function init() {
-
-    var container = $('<div/>')[0];
-    $('body').append(container);
-
-
-
-    // Bg gradient
-    initBG(container);
-    // the scene
-    initScene();
-
-    // postprocessing
-    initEffects();
-
-
-    //
-    container.appendChild(renderer.domElement);
-    //events
-    $(window).on('resize', onWindowResize);
-    $(document).on('mousemove', onDocumentMouseMove);
-
-    $(container).on('mousedown', onMouseDown);
-    $(container).on('mouseup', onMouseUp);
-    $(document).on('keydown', onKeyDown);
-    $(document).on('keyup', onKeyUp);
-
-
-    //thing to snoop on transisions...?
-    var id = 0;
-
-    transisionGUI.add({
-      add: function() {
-        var newTween = {
-          name: 'new',
-          from: 'Default',
-          to: 'Default',
-          easing: 'Linear',
-          duration: 2.0,
-          start: function() {
-            setupTweens(this);
-          }
-        };
-        var newTweenGUI = transisionGUI.addFolder('transhieshon' + (id++));
-        newTweenGUI.add(newTween, 'name');
-        newTweenGUI.add(newTween, 'from', Object.keys((mainGUI.load).remembered));
-        newTweenGUI.add(newTween, 'to', Object.keys((mainGUI.load).remembered));
-        newTweenGUI.add(newTween, 'easing', easings);
-        newTweenGUI.add(newTween, 'duration', 0, 120).step(0.01);
-        newTweenGUI.add(newTween, 'start');
-      }
-    }, 'add');
-
-
-    animate();
-
-  }
 
 
 
@@ -274,7 +233,7 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
     tween.start();
   }
 
-  function setupTweens(params) {
+  function setupTweenz(params) {
     // 
     var presets = (mainGUI.load).remembered;
     var currentSet = $.extend(true, {}, presets[params.from]);
@@ -283,9 +242,7 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
     $(mainGUI.__preset_select).val(params.from);
     mainGUI.preset = params.from;
 
-
-
-    // remove previous tweens if needed
+    // remove previous Tweenz if needed
     TWEEN.removeAll();
 
     // convert the string from dat-gui into tween.js functions 
@@ -313,6 +270,131 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
       }
     }
   }
+
+
+  function addTweenGUI(params) {
+    var newTweenGUI = transitionGUI.addFolder(params.name);
+    newTweenGUI.add(params, 'name').onFinishChange(function(value) {
+      var oldName = params.name;
+      params.name = value;
+      addTweenGUI(params);
+
+      delete transitionGUI.__folders[params.name];
+      $(newTweenGUI.domElement).remove();
+      delete newTweenGUI;
+
+    });
+    newTweenGUI.add(params, 'from', Object.keys((mainGUI.load).remembered));
+    newTweenGUI.add(params, 'to', Object.keys((mainGUI.load).remembered));
+    newTweenGUI.add(params, 'easing', easings);
+    newTweenGUI.add(params, 'duration', 0, 120).step(0.01);
+    newTweenGUI.add({
+      start: function() {
+        setupTweenz(params);
+      }
+    }, 'start');
+    newTweenGUI.add({
+      delete: function() {
+        var conf = confirm("Are you sure you want to delete this transition?");
+        if (conf == true) {
+          Tweenz.splice(Tweenz.indexOf(params), 1);
+          delete transitionGUI.__folders[params.name];
+          $(newTweenGUI.domElement).remove();
+          delete newTweenGUI;
+        }
+      }
+    }, 'delete');
+  }
+
+  function addNewTween(params) {
+    var newTweenParams = {
+      name: 'new transition',
+      from: 'Default',
+      to: 'Default',
+      easing: 'Linear',
+      duration: 2.0
+    };
+    $.extend(newTweenParams, params);
+    addTweenGUI(newTweenParams);
+    Tweenz.push(newTweenParams);
+  }
+
+
+  function initTweenz() {
+    //thing to snoop on transitions...?
+
+    var fns = {
+      add: addNewTween,
+      reset: function() {
+        var conf = confirm("Are you sure? <b>RESET</b> Everything?");
+
+        if (conf == true) {
+          var conf = confirm("... Everything? ...\n ... Really?");
+
+          if (conf == true) {
+            //bye bye EVERYTHING!
+            localStorage.clear();
+          }
+        }
+      },
+      save: function() {
+        //just overwrite for main GUI presets...
+        localStorage['mainGUI'] = JSON.stringify(mainGUI.getSaveObject());
+        //just overwrite for transitions.
+        localStorage['Tweenz'] = JSON.stringify(Tweenz);
+      }
+    }
+
+    transitionGUI.add(fns, 'add').name('Add a transition');
+
+    transitionGUI.add(fns, 'reset').name('Reset it all');
+
+    transitionGUI.add(fns, 'save').name('Save it all');
+
+
+    //setup 'saved' transitions
+    for (var i in loadedTweenz) addNewTween(loadedTweenz[i]);
+
+
+  }
+
+  function init() {
+
+    var container = $('<div/>')[0];
+    $('body').append(container);
+
+
+
+    // Bg gradient
+    initBG(container);
+    // the scene
+    initScene();
+
+    // postprocessing
+    initEffects();
+
+
+    //tweens
+
+    initTweenz();
+
+
+
+    $(container).append(renderer.domElement);
+    //events
+    $(window).on('resize', onWindowResize);
+    $(container).on('mousemove', onDocumentMouseMove);
+
+    $(container).on('mousedown', onMouseDown);
+    $(container).on('mouseup', onMouseUp);
+    $(document).on('keydown', onKeyDown);
+    $(document).on('keyup', onKeyUp);
+
+
+    animate();
+
+  }
+
 
   //=====================================================================================
   // Handlers  
@@ -357,7 +439,7 @@ define(['landscape', 'water', 'clouds', 'shaders/CopyShader', 'shaders/BlendShad
     mouseX = (event.clientX - windowHalfX) / windowHalfX;
     mouseY = -(event.clientY - windowHalfY) / windowHalfY;
 
-    ($('#status').html(mouseX + ":" + mouseY))
+    ($('#status ').html(mouseX + ":" + mouseY))
 
   }
 
