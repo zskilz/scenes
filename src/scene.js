@@ -127,7 +127,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
           localStorage['mainGUI'] = JSON.stringify(mainGUI.getSaveObject());
           //just overwrite for transitions.
           tweenstuff.save();
-          
+
           queFns.save();
         }
       }
@@ -148,11 +148,23 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
 
 
     var queGUI = secondaryGUI.addFolder('Que');
-    var queList = $('<ul>').sortable();
+    var queList = $('<ul id="quequeList">').sortable();
     var queFns = {
       addQueItem: function(tween) {
         var queItem = $('<li>');
         var selectTweenz = $('<select>');
+
+        var playBtn = $('<button>').html('>').addClass('playBtn');
+        playBtn.click(function() {
+          queList.find('li').removeClass('quequed');
+          queItem.addClass('quequed');
+          $(tweenstuff.Tweenz).each(function(k, v) {
+            if (v.name == selectTweenz.val()) v.start();
+          })
+
+        })
+        queItem.append(playBtn);
+
         queItem.append(selectTweenz)
         updateTweenList();
         for (var i in tweenList) {
@@ -163,15 +175,15 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
         deleteBtn.click(function() {
           queItem.remove();
         })
-        queItem.append(deleteBtn)
+        queItem.append(deleteBtn);
 
         queList.append(queItem);
       },
-      save: function(){
+      save: function() {
         var Quesave = [];
-        queList.find('select').each(function(k,v){
+        queList.find('select').each(function(k, v) {
           Quesave.push(v.value);
-          
+
         });
         localStorage['Ques'] = JSON.stringify(Quesave);
       }
@@ -182,9 +194,9 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     $(queGUI.__ul).append(queList);
 
     //load saved ques
-    return function(){
-      var Ques= (typeof(localStorage['Ques']) === 'undefined') ? [] : JSON.parse(localStorage['Ques']);
-      for(var i in Ques){
+    return function() {
+      var Ques = (typeof(localStorage['Ques']) === 'undefined') ? [] : JSON.parse(localStorage['Ques']);
+      for (var i in Ques) {
         queFns.addQueItem(Ques[i]);
       }
     }
@@ -269,7 +281,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     up: 81,
     down: 90,
     fine: 16,
-    que: 0
+    que: 32
 
   };
 
@@ -287,6 +299,9 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     camera.position.add(v.multiplyScalar((fine ? 100 : 1000) * dt));
 
     //que goes here...
+    if(keyMap[actionKeys.que]){
+      tweenstuff.queNext();
+    }
 
     // mouse rotation
     var lookAtPos = new THREE.Vector3(0, 0, - 1);

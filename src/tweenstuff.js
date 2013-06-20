@@ -1,6 +1,6 @@
 define(function() {
 
-  var mainGUI, transitionGUI;
+  var mainGUI, transitionGUI, quequeing;
   var Tweenz = [],
     loadedTweenz = (typeof(localStorage['Tweenz']) === 'undefined') ? [] : JSON.parse(localStorage['Tweenz']);
 
@@ -47,6 +47,7 @@ define(function() {
       if (!done) {
 
         done = true;
+        quequeing = false;
         $(mainGUI.__preset_select).val(params.to);
         mainGUI.preset = params.to;
       }
@@ -99,10 +100,10 @@ define(function() {
       from: 'Default',
       to: 'Default',
       easing: 'Linear',
-      duration: 2.0,      
+      duration: 2.0,
       start: function() {
         setupTweenz(newTweenParams);
-      }    
+      }
     };
     $.extend(newTweenParams, params);
     addTweenGUI(newTweenParams);
@@ -121,14 +122,22 @@ define(function() {
 
     //setup 'saved' transitions
     for (var i in loadedTweenz) addNewTween(loadedTweenz[i]);
-    
+
   }
 
   var _export = {
     initTweenz: initTweenz,
-    Tweenz:Tweenz,
+    Tweenz: Tweenz,
     save: function() {
       localStorage['Tweenz'] = JSON.stringify(Tweenz);
+    },
+    queNext: function() {
+      if (!quequeing) {
+        quequeing = true;
+        var quedThing = $('#quequeList').find('.quequed');
+        if (quedThing.length == 0) $('#quequeList').find('li:first').find('.playBtn').click();
+        else quedThing.removeClass('quequed').next().addClass('.quequed').find('.playBtn').click();
+      }
     }
   }
 
