@@ -1,2 +1,2 @@
 #!/bin/bash
-node r.js/r.js -o build.js
+node r.js/dist/r.js -o build.js
