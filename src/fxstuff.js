@@ -67,7 +67,7 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    renderer.setClearColor("#48b", 0);
+    renderer.setClearColor("#48b", 1);
 
     // the FX
     var FX = {};

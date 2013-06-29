@@ -1,4 +1,4 @@
-define(function() {
+define(['image!img/backgrounddetailed6.jpg'],function(bg) {
 
   var geometry, material, mesh, twopi = Math.PI*2;
 
@@ -22,9 +22,15 @@ define(function() {
         _y = (~~(i / d))/d;
         v.z = (Math.cos(_x * twopi) + Math.cos(_y * twopi)) * 400;
       }
+      
+       var texture = new THREE.Texture(bg);
+      texture.magFilter = THREE.LinearMipMapLinearFilter;
+      texture.minFilter = THREE.LinearMipMapNearestFilter;
+      texture.needsUpdate = true;
 
       material = new THREE.MeshPhongMaterial({
-        color: 0xffaa44,
+        color: 0xffffff,
+        map:texture
         //wireframe: true
       });
 

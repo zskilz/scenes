@@ -64,6 +64,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
 
     // the scene
     scene = new THREE.Scene();
+    
 
     var light = new THREE.DirectionalLight({
       color: '#ffae23'
@@ -76,7 +77,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     var lightGUI = mainGUI.addFolder('light');
 
     mainGUI.remember(light);
-    lightGUI.add(light, 'intensity', 0, 1);
+    lightGUI.add(light, 'intensity', 0, 2);
 
     //lightGUI.add(light,'color');
 
@@ -330,6 +331,8 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     var dt = t - timeLord;
 
     processInput(dt);
+    clouds.render(dt);
+    water.render(dt,t);
 
     fxstuff.render();
     //renderer.render(scene, camera);
