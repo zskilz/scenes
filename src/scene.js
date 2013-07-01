@@ -64,7 +64,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
 
     // the scene
     scene = new THREE.Scene();
-    
+
 
     var light = new THREE.DirectionalLight({
       color: '#ffae23'
@@ -224,6 +224,11 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
 
     $(container).on('mousedown', onMouseDown);
     $(container).on('mouseup', onMouseUp);
+    $(container).on('contextmenu', function(event) {
+
+      event.preventDefault();
+      event.stopPropagation();
+    });
     $(document).on('keydown', onKeyDown);
     $(document).on('keyup', onKeyUp);
 
@@ -241,12 +246,15 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
   function onMouseDown(event) {
     mouseDown = true;
     event.preventDefault();
+    event.stopPropagation();
   }
 
   function onMouseUp(event) {
     mouseDown = false;
 
     event.preventDefault();
+    event.stopPropagation();
+
   }
 
   function onKeyDown(event) {
@@ -298,7 +306,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     camera.position.add(v.multiplyScalar((fine ? 100 : 1000) * dt));
 
     //que goes here...
-    if(keyMap[actionKeys.que]){
+    if (keyMap[actionKeys.que]) {
       tweenstuff.queNext();
     }
 
@@ -330,7 +338,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
 
     processInput(dt);
     clouds.render(dt);
-    water.render(dt,t);
+    water.render(dt, t);
 
     fxstuff.render();
     //renderer.render(scene, camera);

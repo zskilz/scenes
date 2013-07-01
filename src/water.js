@@ -67,7 +67,9 @@ define(['image!img/water.jpg'], function(waterImg) {
 
       //geometry.computeFaceNormals();
       //geometry.computeVertexNormals();
-
+      var offset = (time%100)/100;
+      texture.offset.set(offset, offset);
+     // texture.needsUpdate = true;
       mesh.geometry.verticesNeedUpdate = true;
       //mesh.geometry.normalsNeedUpdate = true;
       mesh.position.y = settings.height;

@@ -1,6 +1,6 @@
-define(['image!img/backgrounddetailed6.jpg'],function(bg) {
+define(['image!img/sand.jpg'], function(bg) {
 
-  var geometry, material, mesh, twopi = Math.PI*2;
+  var geometry, material, mesh, twopi = Math.PI * 2;
 
 
   var _export = {
@@ -9,8 +9,8 @@ define(['image!img/backgrounddetailed6.jpg'],function(bg) {
 
       var geometry, material, mesh;
 
-      var l = 20000,
-        d = 20;
+      var l = 40000,
+        d = 40;
 
       geometry = new THREE.PlaneGeometry(l, l, d - 1, d - 1);
 
@@ -18,19 +18,21 @@ define(['image!img/backgrounddetailed6.jpg'],function(bg) {
       //build the geometry
 
       for (var _x, _y, v, i = 0; v = geometry.vertices[i]; i++) {
-        _x = (i % d)/d;
-        _y = (~~(i / d))/d;
-        v.z = (Math.cos(_x * twopi) + Math.cos(_y * twopi)) * 400;
+        _x = ((i % d) / d) * 2.0 - 1;
+        _y = ((~~ (i / d)) / d) * 2.0 - 1;
+        v.z = (Math.cos(_x * twopi) + Math.cos(_y * twopi)) * (-400);
       }
-      
-       var texture = new THREE.Texture(bg);
+
+      var texture = new THREE.Texture(bg);
       texture.magFilter = THREE.LinearMipMapLinearFilter;
       texture.minFilter = THREE.LinearMipMapNearestFilter;
+      texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+      texture.repeat.set(10,10);
       texture.needsUpdate = true;
 
       material = new THREE.MeshPhongMaterial({
         color: 0xffffff,
-        map:texture
+        map: texture
         //wireframe: true
       });
 
