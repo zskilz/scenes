@@ -265,8 +265,6 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     mouseX = (event.clientX - windowHalfX) / windowHalfX;
     mouseY = -(event.clientY - windowHalfY) / windowHalfY;
 
-    ($('#status ').html(mouseX + ":" + mouseY))
-
   }
 
 
