@@ -38,8 +38,8 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
       edgeObj.blend.enabled = value;
     });;
 
-    EdgeGUI.add(edgeObj.blend.uniforms.mixRatio, 'value', - 1, 1).name('mixratio');
-    EdgeGUI.add(edgeObj.blend.uniforms.opacity, 'value', 0, 1).name('opacity');
+    EdgeGUI.add(edgeObj.blend.uniforms.mixRatio, 'value', - 1, 1).step(0.1).name('mixratio');
+    EdgeGUI.add(edgeObj.blend.uniforms.opacity, 'value', 0, 1).step(0.1).name('opacity');
 
     gui.remember(FX.vignette);
     gui.remember(FX.vignette.uniforms.offset);
@@ -49,14 +49,14 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
 
     vignetteGUI.add(FX.vignette, 'enabled');
     vignetteGUI.add(FX.vignette.uniforms.offset, 'value', 0, 100).step(0.25).name('offset');
-    vignetteGUI.add(FX.vignette.uniforms.darkness, 'value', 0, 1).name('darkness');
+    vignetteGUI.add(FX.vignette.uniforms.darkness, 'value', 0, 1).step(0.1).name('darkness');
 
     gui.remember(FX.sepia);
     gui.remember(FX.sepia.uniforms.amount);
 
     var sepiaGUI = EffectsGUI.addFolder('Sepia');
     sepiaGUI.add(FX.sepia, 'enabled').name('Sepia');
-    sepiaGUI.add(FX.sepia.uniforms.amount, 'value', - 1, 1).name('amount');
+    sepiaGUI.add(FX.sepia.uniforms.amount, 'value', - 1, 1).step(0.1).name('amount');
 
   }
 
