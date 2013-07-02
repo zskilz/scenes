@@ -66,15 +66,15 @@ define(function() {
 
   function addTweenGUI(params) {
     var newTweenGUI = transitionGUI.addFolder(params.name);
+    var oldName = params.name;
+
     newTweenGUI.add(params, 'name').onFinishChange(function(value) {
-      var oldName = params.name;
-      params.name = value;
       addTweenGUI(params);
 
-      delete transitionGUI.__folders[params.name];
+      delete transitionGUI.__folders[oldName];
       $(newTweenGUI.domElement).remove();
       delete newTweenGUI;
-
+      oldName = value;
     });
     newTweenGUI.add(params, 'from', Object.keys((mainGUI.load).remembered));
     newTweenGUI.add(params, 'to', Object.keys((mainGUI.load).remembered));
