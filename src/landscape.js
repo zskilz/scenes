@@ -41,7 +41,8 @@ define(['image!img/sand.jpg'], function(bg) {
       geometry.computeTangents();
 
       mesh = new THREE.Mesh(geometry, material);
-      //mesh.receiveShadow = true;
+      mesh.receiveShadow = true;
+      mesh.castShadow = true;
       mesh.position.y = -500;
       mesh.rotation.x = -Math.PI / 2;
       scene.add(mesh);

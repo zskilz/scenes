@@ -15,6 +15,7 @@
 
   paths: {
     text: '../requirejs-plugins/lib/text',
+    json: '../requirejs-plugins/src/json',
     image: '../requirejs-plugins/src/image',
     'dat.gui': '../dat-gui/build/dat.gui.min',
     jquery: 'empty:',

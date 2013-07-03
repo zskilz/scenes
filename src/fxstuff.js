@@ -1,7 +1,7 @@
 define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shaders/VignetteShader', 'shaders/SepiaShader'], function() {
 
   var renderer, composer, camera;
-  
+
   function onWindowResize(event) {
 
     camera.aspect = window.innerWidth / window.innerHeight;
@@ -25,12 +25,15 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
       enabled: true,
       savePass: FX.savePass,
       edgeEffect: FX.edgeEffect,
-      blend: FX.blend
+      blend: FX.blend,
+      bg: '#456',
+      bgOpacity: 1
     }
     gui.remember(edgeObj);
 
     gui.remember(edgeObj.blend.uniforms.mixRatio);
     gui.remember(edgeObj.blend.uniforms.opacity);
+
 
     EdgeGUI.add(edgeObj, 'enabled').onFinishChange(function(value) {
       edgeObj.savePass.enabled = value;
@@ -40,6 +43,11 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
 
     EdgeGUI.add(edgeObj.blend.uniforms.mixRatio, 'value', - 1, 1).step(0.1).name('mixratio');
     EdgeGUI.add(edgeObj.blend.uniforms.opacity, 'value', 0, 1).step(0.1).name('opacity');
+    EdgeGUI.add(edgeObj, 'bgOpacity', 0, 1).name('Bg opacity').onFinishChange(function() {
+
+      renderer.setClearColor(edgeObj.bg, edgeObj.bgOpacity);
+    });;
+    EdgeGUI.addColor(edgeObj, 'bg').name('Background color');
 
     gui.remember(FX.vignette);
     gui.remember(FX.vignette.uniforms.offset);
@@ -58,16 +66,22 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
     sepiaGUI.add(FX.sepia, 'enabled').name('Sepia');
     sepiaGUI.add(FX.sepia.uniforms.amount, 'value', - 1, 1).step(0.1).name('amount');
 
+
+
   }
 
   function initEffects(container, scene, _camera, gui) {
     camera = _camera;
     renderer = new THREE.WebGLRenderer({
-      antialias: false
+      antialias: false,
+      format: THREE.RGBAFormat,
     });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    renderer.setClearColor("#48b", 1);
+    renderer.setClearColor("#48b444",0);
+
+    renderer.shadowMapEnabled = true;
+    renderer.shadowMapType = THREE.PCFShadowMap;
 
     // the FX
     var FX = {};

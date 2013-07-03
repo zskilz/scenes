@@ -9,7 +9,7 @@ DOF,
 
 */
 
-define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(landscape, water, clouds, fxstuff, tweenstuff) {
+define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff', 'models'], function(landscape, water, clouds, fxstuff, tweenstuff, models) {
 
   var camera, scene, mainGUI, secondaryGUI, transitionGUI;
 
@@ -50,7 +50,7 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
 
   function initScene() {
     // The camera
-    camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 100000);
+    camera = new THREE.PerspectiveCamera(30, window.innerWidth / window.innerHeight, 1, 50000);
 
     //camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 100000);
     camera.position.z = 8000;
@@ -66,18 +66,42 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     scene = new THREE.Scene();
 
 
-    var light = new THREE.DirectionalLight({
-      color: '#ffae23'
-    });
-    light.position.set(1000, 1000, 0);
-    light.lookAt(zV);
-    light.rotation.z = Math.PI / 2;
-    //light.castShadow = true;
+    light = new THREE.DirectionalLight(0xffffff, 1);
+
+    light.position.set(-1000, 3000, 0);
+    light.target.position.set(0, 0, 0);
+
+
+    light.castShadow = true;
+
+    var d = 5000;
+
+    light.shadowCameraLeft = -d;
+    light.shadowCameraRight = d;
+    light.shadowCameraTop = d;
+    light.shadowCameraBottom = -d;
+
+    light.shadowCameraNear = 700;
+    light.shadowCameraFar = 15000;
+    light.shadowCameraFov = 50;
+
+    //light.shadowCameraVisible = true;
+
+    light.shadowBias = 0.0001;
+    light.shadowDarkness = 0.5;
+    var SHADOW_MAP_WIDTH = 2048,
+      SHADOW_MAP_HEIGHT = 1024;
+
+
+    light.shadowMapWidth = SHADOW_MAP_WIDTH;
+    light.shadowMapHeight = SHADOW_MAP_HEIGHT;
 
     var lightGUI = mainGUI.addFolder('light');
 
     mainGUI.remember(light);
+    mainGUI.remember(light.position);
     lightGUI.add(light, 'intensity', 0, 2);
+    lightGUI.add(light.position, 'x', -10000, 10000);
 
     //lightGUI.add(light,'color');
 
@@ -86,6 +110,8 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     landscape.init(scene, mainGUI);
     water.init(scene, mainGUI);
     clouds.init(scene, mainGUI);
+    models.init(scene, mainGUI);
+   
   }
 
   function setupGUI() {
@@ -231,6 +257,8 @@ define(['landscape', 'water', 'clouds', 'fxstuff', 'tweenstuff'], function(lands
     });
     $(document).on('keydown', onKeyDown);
     $(document).on('keyup', onKeyUp);
+
+
 
 
     animate();

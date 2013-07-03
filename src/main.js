@@ -16,6 +16,7 @@ require.config({
 
   paths: {
     text: '../requirejs-plugins/lib/text',
+    json: '../requirejs-plugins/src/json',
     image: '../requirejs-plugins/src/image',
     'dat.gui': '../dat-gui/build/dat.gui.min',
     jquery: '//ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min',
