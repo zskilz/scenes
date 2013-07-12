@@ -1,6 +1,6 @@
 define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shaders/VignetteShader', 'shaders/SepiaShader'], function() {
 
-  var renderer, composer, camera;
+  var renderer, composer, camera, FX;
 
   function onWindowResize(event) {
 
@@ -16,7 +16,7 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
   }
 
 
-  function initEffectsGui(FX, gui) {
+  function initEffectsGui(gui) {
     var EffectsGUI = gui.addFolder('Effects');
 
     var EdgeGUI = EffectsGUI.addFolder('Edge');
@@ -26,8 +26,8 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
       savePass: FX.savePass,
       edgeEffect: FX.edgeEffect,
       blend: FX.blend,
-      bg: '#456',
-      bgOpacity: 1
+      bg: '#000000',
+      bgOpacity: 0
     }
     gui.remember(edgeObj);
 
@@ -43,7 +43,7 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
 
     EdgeGUI.add(edgeObj.blend.uniforms.mixRatio, 'value', - 1, 1).step(0.1).name('mixratio');
     EdgeGUI.add(edgeObj.blend.uniforms.opacity, 'value', 0, 1).step(0.1).name('opacity');
-    EdgeGUI.add(edgeObj, 'bgOpacity', 0, 1).name('Bg opacity').onFinishChange(function() {
+    EdgeGUI.add(edgeObj, 'bgOpacity', 0, 1).name('Bg opacity').onChange(function() {
 
       renderer.setClearColor(edgeObj.bg, edgeObj.bgOpacity);
     });;
@@ -72,19 +72,16 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
 
   function initEffects(container, scene, _camera, gui) {
     camera = _camera;
-    renderer = new THREE.WebGLRenderer({
-      antialias: false,
-      format: THREE.RGBAFormat,
-    });
+    renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    renderer.setClearColor("#48b444",0);
+    renderer.setClearColor("#000000",0);
 
     renderer.shadowMapEnabled = true;
     renderer.shadowMapType = THREE.PCFShadowMap;
 
     // the FX
-    var FX = {};
+    FX = {};
 
     FX.savePass = new THREE.SavePass();
 
@@ -97,20 +94,24 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
     FX.blend.uniforms['mixRatio'].value = 0.85;
 
     FX.vignette = new THREE.ShaderPass(THREE.VignetteShader);
+    FX.vignette.enabled = false;
     FX.vignette.uniforms['offset'].value.x = 1;
     FX.vignette.uniforms['darkness'].value.x = 1;
 
     FX.sepia = new THREE.ShaderPass(THREE.SepiaShader);
+    FX.sepia.enabled = false;
     FX.sepia.uniforms['amount'].value.x = 1;
 
     FX.final = new THREE.ShaderPass(THREE.CopyShader);
     FX.final.renderToScreen = true;
 
+    FX.render = new THREE.RenderPass(scene, camera)
+
     //post-processing chain...
 
     composer = new THREE.EffectComposer(renderer);
     //render
-    composer.addPass(new THREE.RenderPass(scene, camera));
+    composer.addPass(FX.render);
     //save
     composer.addPass(FX.savePass);
     //edge effect
@@ -125,7 +126,7 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
     composer.addPass(FX.final);
 
     //GUI bindings for effects
-    initEffectsGui(FX, gui);
+    initEffectsGui( gui);
 
     $(container).append(renderer.domElement);
 
@@ -138,6 +139,7 @@ define(['shaders/CopyShader', 'shaders/BlendShader', 'shaders/EdgeShader', 'shad
 
   var _export = {
     render: function() {
+      renderer.clear();
       composer.render();
     },
     initEffects: initEffects
